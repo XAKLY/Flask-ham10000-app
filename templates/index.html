@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://kit.fontawesome.com/382904f6bd.js" crossorigin="anonymous"></script>
+    <title>Upload Image</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=Bebas+Neue&family=Pacifico&family=Varela+Round&display=swap');
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 105vh;
+            margin: 0;
+            font-family: "Archivo Black", sans-serif;
+            font-weight: 400;
+            font-style: normal;
+            background-color: rgb(241, 241, 241);
+
+        }
+
+        a{
+            text-decoration: none; /* Supprimer le soulignement du lien */
+            padding: 15px 20px;
+            border: 2px solid black;
+            border-radius: 35px;
+            font-size: 10px;
+            cursor: pointer;
+            animation: colorChange 2s infinite;
+            
+        }
+         a i{
+            margin-left: 10px;
+         }
+
+        @keyframes colorChange {
+    0%, 100% {
+        border-color: rgb(0, 0, 0);
+        color: rgb(0, 0, 0);
+    }
+    50% {
+        border-color: rgb(241, 241, 241);
+        color: rgb(241, 241, 241)
+    }
+}
+
+       
+        #uploadForm {
+            background-color: rgb(241, 241, 241);
+            text-align: center;
+            padding: 40px;
+            border-radius: 40px;
+        }
+        h1, p {
+            margin-bottom: 20px;
+            color: rgb(0, 0, 0);
+            font-weight: bold;
+        }
+        input[type="file"] {
+            display: none; /* Hide the default file input */
+        }
+        .custom-file-upload {
+            display: inline-block;
+            padding: 15px 20px;
+            border-radius: 25px;
+            background-color: rgb(241, 241, 241);
+            cursor: pointer;
+            transition: all ease 0.5s;
+            border: 2px solid rgb(0, 0, 0);
+            color: rgb(0, 0, 0);
+            font-weight: bold;
+            font-size: 12px;
+        }
+        .custom-file-upload:hover {
+            background-color: rgb(0, 0, 0);
+            color: rgb(241, 241, 241);
+            border: 2px solid rgb(241, 241, 241);
+        }
+        button {
+            padding: 15px 35px;
+            border-radius: 25px;
+            background-color: rgb(0, 0, 0);
+            cursor: pointer;
+            color:rgb(241, 241, 241);
+            transition: all ease 0.5s;
+            border: 2px solid rgb(0, 0, 0);
+            font-family: 'Archivo Black', sans-serif;
+            font-size: 12px;
+            margin-top: 15px;
+            display: none; /* Initially hide the button */
+        }
+        button.show {
+            display: inline-block; /* Show the button when class 'show' is added */
+        }
+        button:hover {
+            padding: 15px 40px;
+            background-color: rgb(241, 241, 241);
+            color: rgb(0, 0, 0);
+            border: 2px solid rgb(0, 0, 0);
+        }
+        #preview {
+            margin-top: 20px;
+        }
+        #preview img {
+            max-width: 50%;
+            height: auto;
+            border-radius: 20px;
+        }
+        #predictionResult {
+            display: none; /* Hide the prediction result by default */
+            margin-top: 20px;
+            font-weight: bold;
+            font-size: 18px;
+            color: rgb(0, 0, 0);
+        }
+ 
+
+    </style>
+</head>
+
+<body>
+
+    <form id="uploadForm" action="/" method="post" enctype="multipart/form-data">
+        <a href="">MORE DETAILS ABOUT MODEL <i class="fa-solid fa-arrow-right"></i></a>
+        <br> 
+        <br> 
+        <h1>UPLOAD SKIN LESION IMAGE</h1>        
+        <label for="fileInput" class="custom-file-upload">CHOOSE A FILE</label>
+        <input type="file" name="file" accept="image/*" id="fileInput">
+        <br>
+        <div id="preview"></div>
+        <button type="submit" id="submitButton">PREDICT</button>
+        <div id="predictionResult"></div> <!-- Prediction result will be displayed here -->
+    </form>
+    
+    <script>
+        document.getElementById('fileInput').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            const submitButton = document.getElementById('submitButton');
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    const preview = document.getElementById('preview');
+                    preview.innerHTML = ''; // Clear any existing content
+                    preview.appendChild(img);
+                };
+                reader.readAsDataURL(file);
+                submitButton.classList.add('show'); // Show the submit button
+            }
+        });
+
+        document.getElementById('uploadForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent default form submission
+            const formData = new FormData(this);
+            fetch('/', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('predictionResult').innerText = data;
+                document.getElementById('predictionResult').style.display = 'block'; // Show the prediction result
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    </script>
+</body>
+</html>
